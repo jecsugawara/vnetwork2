@@ -16,7 +16,7 @@
 # 5:仮想ネットワークインタフェースを有効にした状態
 # 6:仮想ネットワークインタフェースにデフォルトゲートウェイを設定した状態
 # 7:Linuxカーネルの設定でルーターの機能を有効にした状態
-stat=0	
+stat=0    
 
 function fn_fig1() {
 cat << END
@@ -291,13 +291,13 @@ cat << END
 #                       |    | 198.51.100.254/24 |    |
 #                       |    +-------------------+    |
 #                                                     |     ns2
-#                                                     |    +------------------+ 
-#                                                     |    |    UP            |
-#                                                     +----O ns2-veth0        |
-#                                                     |    | 198.51.100.1/24  |
-#                                                     |    |                  |
-#                                                     |    | GW 198.51.100.254|
-#                                                     |    +------------------+ 
+#                                                     |    +-------------------+ 
+#                                                     |    |    UP             |
+#                                                     +----O ns2-veth0         |
+#                                                     |    | 198.51.100.1/24   |
+#                                                     |    |                   |
+#                                                     |    | GW 198.51.100.254 |
+#                                                     |    +-------------------+ 
 #                                                      
 
 END
@@ -341,12 +341,12 @@ cat << END
 #                       |   |                     |   |
 #                       |   |net.ipv4.ip_forward=1|   |   
 #                       |   +---------------------+   |     ns2
-#                                                     |    +------------------+ 
-#                                                     |    |    UP            |
-#                                                     +----O ns2-veth0        |
-#                                                     |    | 198.51.100.1/24  |
-#                                                     |    |                  |
-#                                                     |    | GW 198.51.100.254|
+#                                                     |    +-------------------+ 
+#                                                     |    |    UP             |
+#                                                     +----O ns2-veth0         | 
+#                                                     |    | 198.51.100.1/24   |
+#                                                     |    |                   |
+#                                                     |    | GW 198.51.100.254 |
 #                                                     |    +------------------+ 
 #                                                      
 
@@ -364,35 +364,35 @@ END
 
 function fn_fig() {
     echo ''
-	case $stat in
-		0) echo 'ネットワークネームスペースがありません' ;;
-		1) echo '状態(1)'
+    case $stat in
+        0) echo 'ネットワークネームスペースがありません' ;;
+        1) echo '状態(1)'
            fn_fig1 
            ;;
-		2) echo '状態(2)'
+        2) echo '状態(2)'
            fn_fig2
            ;;
-		3) echo '状態(3)'
+        3) echo '状態(3)'
            fn_fig3
            ;;
-		4) echo '状態(4)'
+        4) echo '状態(4)'
            fn_fig4
            ;;
-		5) echo '状態(5)'
+        5) echo '状態(5)'
            fn_fig5
            ;;
-		6) echo '状態(6)'
+        6) echo '状態(6)'
            fn_fig6
            ;;
-		7) echo '状態(7)'
+        7) echo '状態(7)'
            fn_fig7
            ;;
-	esac
+    esac
 }
 
 function fn_hitAnyKey(){
-	echo "> hit any key!"
-	read keyin
+    echo "> hit any key!"
+    read keyin
 }
 
 function fn_menu() {
@@ -413,178 +413,204 @@ Linuxカーネルの設定でルーターの機能を有効化
 pingを実行
 状態を表示
 ネットワークネームスペースをすべて削除
-終了'
+終了
+課題提出用の出力'
 
 select item in $menu_list
 do
-	echo ""
-	echo "${REPLY}) ${item}します"
-	case $REPLY in
-	1) #ネットワークネームスペースを作成する
-		echo sudo ip netns add ns1
-		echo sudo ip netns add router
-		echo sudo ip netns add ns2
+    echo ""
+    echo "${REPLY}) ${item}します"
+    case $REPLY in
+    1) #ネットワークネームスペースを作成する
+        echo sudo ip netns add ns1
+        echo sudo ip netns add router
+        echo sudo ip netns add ns2
         echo ''
-		sudo ip netns add ns1
-		sudo ip netns add router
-		sudo ip netns add ns2
-		stat=1
-		echo $stat > ./.namespace_tmp
-		fn_fig
+        sudo ip netns add ns1
+        sudo ip netns add router
+        sudo ip netns add ns2
+        stat=1
+        echo $stat > ./.namespace_tmp
+        fn_fig
         fn_exp1
-		;;
-	2) #仮想ネットワークインタフェースを作成する
-		echo sudo ip link add ns1-veth0 type veth peer name gw-veth0
-		echo sudo ip link add ns2-veth0 type veth peer name gw-veth1
+        ;;
+    2) #仮想ネットワークインタフェースを作成する
+        echo sudo ip link add ns1-veth0 type veth peer name gw-veth0
+        echo sudo ip link add ns2-veth0 type veth peer name gw-veth1
         echo ''
-		sudo ip link add ns1-veth0 type veth peer name gw-veth0
-		sudo ip link add ns2-veth0 type veth peer name gw-veth1
-		stat=2
-		echo $stat > ./.namespace_tmp
-		fn_fig
+        sudo ip link add ns1-veth0 type veth peer name gw-veth0
+        sudo ip link add ns2-veth0 type veth peer name gw-veth1
+        stat=2
+        echo $stat > ./.namespace_tmp
+        fn_fig
         fn_exp2
-		;;
-	3) #仮想ネットワークインタフェースを配置する
-		echo sudo ip link set ns1-veth0 netns ns1
-		echo sudo ip link set gw-veth0  netns router
-		echo sudo ip link set gw-veth1  netns router
-		echo sudo ip link set ns2-veth0 netns ns2
+        ;;
+    3) #仮想ネットワークインタフェースを配置する
+        echo sudo ip link set ns1-veth0 netns ns1
+        echo sudo ip link set gw-veth0  netns router
+        echo sudo ip link set gw-veth1  netns router
+        echo sudo ip link set ns2-veth0 netns ns2
         echo ''
-		sudo ip link set ns1-veth0 netns ns1
-		sudo ip link set gw-veth0  netns router
-		sudo ip link set gw-veth1  netns router
-		sudo ip link set ns2-veth0 netns ns2
-		stat=3
-		echo $stat > ./.namespace_tmp
-		fn_fig
+        sudo ip link set ns1-veth0 netns ns1
+        sudo ip link set gw-veth0  netns router
+        sudo ip link set gw-veth1  netns router
+        sudo ip link set ns2-veth0 netns ns2
+        stat=3
+        echo $stat > ./.namespace_tmp
+        fn_fig
         fn_exp3
-		;;
-	4) #仮想ネットワークインタフェースにIPアドレスを設定する
-		echo sudo ip netns exec ns1    ip address add 192.0.2.1/24      dev ns1-veth0
-		echo sudo ip netns exec router ip address add 192.0.2.254/24    dev gw-veth0
-		echo sudo ip netns exec router ip address add 198.51.100.254/24 dev gw-veth1
-		echo sudo ip netns exec ns2    ip address add 198.51.100.1/24   dev ns2-veth0
+        ;;
+    4) #仮想ネットワークインタフェースにIPアドレスを設定する
+        echo sudo ip netns exec ns1    ip address add 192.0.2.1/24      dev ns1-veth0
+        echo sudo ip netns exec router ip address add 192.0.2.254/24    dev gw-veth0
+        echo sudo ip netns exec router ip address add 198.51.100.254/24 dev gw-veth1
+        echo sudo ip netns exec ns2    ip address add 198.51.100.1/24   dev ns2-veth0
         echo ''
-		sudo ip netns exec ns1    ip address add 192.0.2.1/24      dev ns1-veth0
-		sudo ip netns exec router ip address add 192.0.2.254/24    dev gw-veth0
-		sudo ip netns exec router ip address add 198.51.100.254/24 dev gw-veth1
-		sudo ip netns exec ns2    ip address add 198.51.100.1/24   dev ns2-veth0
-		stat=4
-		echo $stat > ./.namespace_tmp
-		fn_fig
+        sudo ip netns exec ns1    ip address add 192.0.2.1/24      dev ns1-veth0
+        sudo ip netns exec router ip address add 192.0.2.254/24    dev gw-veth0
+        sudo ip netns exec router ip address add 198.51.100.254/24 dev gw-veth1
+        sudo ip netns exec ns2    ip address add 198.51.100.1/24   dev ns2-veth0
+        stat=4
+        echo $stat > ./.namespace_tmp
+        fn_fig
         fn_exp4
-		;;
-	5) #仮想ネットワークインタフェースを有効にする
-		echo sudo ip netns exec ns1    ip link set ns1-veth0 up
-		echo sudo ip netns exec router ip link set gw-veth0  up
-		echo sudo ip netns exec router ip link set gw-veth1  up
-		echo sudo ip netns exec ns2    ip link set ns2-veth0 up
+        ;;
+    5) #仮想ネットワークインタフェースを有効にする
+        echo sudo ip netns exec ns1    ip link set ns1-veth0 up
+        echo sudo ip netns exec router ip link set gw-veth0  up
+        echo sudo ip netns exec router ip link set gw-veth1  up
+        echo sudo ip netns exec ns2    ip link set ns2-veth0 up
         echo ''
-		sudo ip netns exec ns1    ip link set ns1-veth0 up
-		sudo ip netns exec router ip link set gw-veth0  up
-		sudo ip netns exec router ip link set gw-veth1  up
-		sudo ip netns exec ns2    ip link set ns2-veth0 up
-		stat=5
-		echo $stat > ./.namespace_tmp
-		fn_fig
+        sudo ip netns exec ns1    ip link set ns1-veth0 up
+        sudo ip netns exec router ip link set gw-veth0  up
+        sudo ip netns exec router ip link set gw-veth1  up
+        sudo ip netns exec ns2    ip link set ns2-veth0 up
+        stat=5
+        echo $stat > ./.namespace_tmp
+        fn_fig
         fn_exp5
-		;;
-	6) #ns1,ns2にデフォルトゲートウェイを設定する
-		echo sudo ip netns exec ns1 ip route add default via 192.0.2.254
-		echo sudo ip netns exec ns2 ip route add default via 198.51.100.254
+        ;;
+    6) #ns1,ns2にデフォルトゲートウェイを設定する
+        echo sudo ip netns exec ns1 ip route add default via 192.0.2.254
+        echo sudo ip netns exec ns2 ip route add default via 198.51.100.254
         echo ''
-		sudo ip netns exec ns1 ip route add default via 192.0.2.254
-		sudo ip netns exec ns2 ip route add default via 198.51.100.254
-		stat=6
-		echo $stat > ./.namespace_tmp
-		fn_fig
+        sudo ip netns exec ns1 ip route add default via 192.0.2.254
+        sudo ip netns exec ns2 ip route add default via 198.51.100.254
+        stat=6
+        echo $stat > ./.namespace_tmp
+        fn_fig
         fn_exp6
-		;;
-	7) #Linuxカーネルの設定でルーターの機能を有効にする
-		echo sudo ip netns exec router sysctl net.ipv4.ip_forward=1
+        ;;
+    7) #Linuxカーネルの設定でルーターの機能を有効にする
+        echo sudo ip netns exec router sysctl net.ipv4.ip_forward=1
         echo ''
-		sudo ip netns exec router sysctl net.ipv4.ip_forward=1
-		stat=7
-		echo $stat > ./.namespace_tmp
-		fn_fig
+        sudo ip netns exec router sysctl net.ipv4.ip_forward=1
+        stat=7
+        echo $stat > ./.namespace_tmp
+        fn_fig
         fn_exp7
-		;;
-	8) #ネットワークネームスペースを確認する
-		echo ip netns list
+        ;;
+    8) #ネットワークネームスペースを確認する
+        echo ip netns list
         echo ''
-		ip netns list
-		;;
-	9) #仮想ネットワークインタフェースを確認する
-		echo '----------------------------------------------------'
-		echo sudo ip netns exec ns1 ip link list
-        echo ''
-		sudo ip netns exec ns1 ip link list
+        ip netns list
+        ;;
+    9) #仮想ネットワークインタフェースを確認する
         echo '----------------------------------------------------'
-		echo sudo ip netns exec router ip link list
+        echo sudo ip netns exec ns1 ip link list
         echo ''
-		sudo ip netns exec router ip link list
+        sudo ip netns exec ns1 ip link list
         echo '----------------------------------------------------'
-		echo sudo ip netns exec ns2 ip link list
+        echo sudo ip netns exec router ip link list
         echo ''
-		sudo ip netns exec ns2 ip link list
+        sudo ip netns exec router ip link list
         echo '----------------------------------------------------'
-		;;
-	10) #ns1,ns2のルーティング(デフォルトルート)を確認する
-		echo '----------------------------------------------------'
-		echo sudo ip netns exec ns1 route -n
-		echo ''
-		sudo ip netns exec ns1 route -n
-		echo '----------------------------------------------------'
-		echo sudo ip netns exec ns2 route -n
-		echo ''
-		sudo ip netns exec ns2 route -n
-		echo '----------------------------------------------------'
-		;; 
-	11) #pingを実行(n1->n2)する
-		echo '----------------------------------------------------'
-		echo 'ns1 から ns2 へpingを実行'
-		echo sudo ip netns exec ns1 ping -c 5 198.51.100.1 -I ns1-veth0
+        echo sudo ip netns exec ns2 ip link list
         echo ''
-		sudo ip netns exec ns1 ping -c 5 198.51.100.1 -I ns1-veth0
-		sleep 2
+        sudo ip netns exec ns2 ip link list
+        echo '----------------------------------------------------'
+        ;;
+    10) #ns1,ns2のルーティング(デフォルトルート)を確認する
+        echo '----------------------------------------------------'
+        echo sudo ip netns exec ns1 route -n
+        echo ''
+        sudo ip netns exec ns1 route -n
+        echo '----------------------------------------------------'
+        echo sudo ip netns exec ns2 route -n
+        echo ''
+        sudo ip netns exec ns2 route -n
+        echo '----------------------------------------------------'
+        ;; 
+    11) #pingを実行(n1->n2)する
+        echo '----------------------------------------------------'
+        echo 'ns1 から ns2 へpingを実行'
+        echo sudo ip netns exec ns1 ping -c 5 198.51.100.1 -I ns1-veth0
+        echo ''
+        sudo ip netns exec ns1 ping -c 5 198.51.100.1 -I ns1-veth0
+        sleep 2
 
-	    #pingを実行(n2->n1)する
-		echo ''
-		echo '----------------------------------------------------'
-		echo 'ns2 から ns1 へpingを実行'
-		echo sudo ip netns exec ns2 ping -c 5 192.0.2.1 -I ns2-veth0
+        #pingを実行(n2->n1)する
         echo ''
-		sudo ip netns exec ns2 ping -c 5 192.0.2.1 -I ns2-veth0
-		echo '----------------------------------------------------'
-		;;
-	12) #状態を表示する
-		if [  -e ./.namespace_tmp ]
-		then
-			stat=$(cat ./.namespace_tmp)
-		fi
-		fn_fig
-		;;
-	13) #ネットワークネームスペースをすべて削除する
-		echo sudo ip -all netns delete
+        echo '----------------------------------------------------'
+        echo 'ns2 から ns1 へpingを実行'
+        echo sudo ip netns exec ns2 ping -c 5 192.0.2.1 -I ns2-veth0
         echo ''
-		sudo ip -all netns delete
-		stat=0
-		rm ./.namespace_tmp
-		;;
-	14) #終了する
-		echo "bye bye!"
-		exit
-		;;
-	*)
-		echo "番号を入力してください"
-	esac
+        sudo ip netns exec ns2 ping -c 5 192.0.2.1 -I ns2-veth0
+        echo '----------------------------------------------------'
+        ;;
+    12) #状態を表示する
+        if [  -e ./.namespace_tmp ]
+        then
+            stat=$(cat ./.namespace_tmp)
+        fi
+        fn_fig
+        ;;
+    13) #ネットワークネームスペースをすべて削除する
+        echo sudo ip -all netns delete
+        echo ''
+        sudo ip -all netns delete
+        stat=0
+        rm ./.namespace_tmp
+        ;;
+    14) #終了する
+        echo "bye bye!"
+        exit
+        ;;
+    15) #課題提出用の出力
+        read -p '学生番号> ' unumber
+        read -p '氏  名  > ' uname
+        export TZ='Asia/Tokyo'
+        echo '----ここから----'
+        echo 'NO. : ' $unumber
+        echo 'NAME: ' $uname
+        echo 'ID. : ' $(echo $unumber | md5sum)
+        echo ''
+        date
+        fn_fig        
 
-	echo ""
-	echo "Enterキーを押してください。"
+        #pingを実行(n1->n2)する
+        echo ''
+        echo 'ns1 から ns2 へpingを実行'
+        echo ''
+        sudo ip netns exec ns1 ping -c 5 198.51.100.1 -I ns1-veth0
+
+        #pingを実行(n2->n1)する
+        echo ''
+        echo 'ns2 から ns1 へpingを実行'
+        echo ''
+        sudo ip netns exec ns2 ping -c 5 192.0.2.1 -I ns2-veth0
+        echo '----ここまで----'
+        ;;
+    *)
+        echo "番号を入力してください"
+    esac
+
+    echo ""
+    echo "Enterキーを押してください。"
     read n
 
-	#sleep 2
-	fn_menu
+    #sleep 2
+    fn_menu
 done
 
 }
@@ -597,7 +623,7 @@ echo '###'
 
 echo ''
 echo 'これから作成するネットワーク'
-fn_fig5
+fn_fig7
 sleep 3
 
 echo ""
